@@ -31,16 +31,16 @@ python scripts/inferende.py
 ### Configuration
 Edit config/lora_config.json to customize:
 
-Model: mistralai/Mistral-7B-v0.1 (or llama, phi-2).
-LoRA: r, alpha, target_modules.
-Training: batch_size, learning_rate, epochs.
-Dataset: Any Hugging Face dataset (e.g., HuggingFaceH4/ultrachat_200k).
+Model: mistralai/Mistral-7B-v0.1 (or llama, phi-2).   
+LoRA: r, alpha, target_modules.   
+Training: batch_size, learning_rate, epochs.   
+Dataset: Any Hugging Face dataset (e.g., HuggingFaceH4/ultrachat_200k).   
 
-📄 License
+#### License
 This project is licensed under the MIT License – see LICENSE for details.
 
-🙏 Acknowledgments
+#### 🙏 Acknowledgments
 
-[Hugging Face](https://huggingface.co/) for transformers and peft.
-[Mistral AI](https://mistral.ai/) for the base model.
-[Databricks](https://www.databricks.com/) for the Dolly dataset.
+[Hugging Face](https://huggingface.co/) for transformers and peft.   
+[Mistral AI](https://mistral.ai/) for the base model.   
+[Databricks](https://www.databricks.com/) for the Dolly dataset.   

@@ -1,7 +1,7 @@
 # llm-finetuning-lora
 LLM fine-tuning experiments on custom dataset
 
-## 🏗️ **Setup**
+##  **Setup**
 ### 1. Clone the Repo
 ```bash
 git clone https://github.com/HaaseSchuetz/llm-finetuning-lora.git
@@ -39,7 +39,7 @@ Dataset: Any Hugging Face dataset (e.g., HuggingFaceH4/ultrachat_200k).
 #### License
 This project is licensed under the MIT License – see LICENSE for details.
 
-#### 🙏 Acknowledgments
+####  Acknowledgments
 
 [Hugging Face](https://huggingface.co/) for transformers and peft.   
 [Mistral AI](https://mistral.ai/) for the base model.   

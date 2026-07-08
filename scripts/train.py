@@ -1,5 +1,6 @@
 import json
 import os
+import logging
 from datetime import datetime
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
@@ -7,17 +8,28 @@ from data.prepare_dataset import load_and_preprocess
 import torch
 from pathlib import Path
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 # Load config
+logger.info("Loading configuration from config/lora_config.json")
 with open("config/lora_config.json") as f:
     config = json.load(f)
 
 # Load dataset and tokenizer
+logger.info(f"Loading dataset: {config['training']['dataset']}")
 dataset, tokenizer = load_and_preprocess(
     dataset_name=config["training"]["dataset"],
     max_length=config["training"]["max_seq_length"]
 )
+logger.info(f"Dataset loaded with {len(dataset)} samples")
 
 # Load model with quantization
+logger.info(f"Loading model: {config['model']['name']}")
 model = AutoModelForCausalLM.from_pretrained(
     config["model"]["name"],
     torch_dtype=torch.float16,
@@ -25,12 +37,15 @@ model = AutoModelForCausalLM.from_pretrained(
     device_map=config["model"]["device_map"],
     trust_remote_code=True
 )
+logger.info("Model loaded successfully")
 
 # Prepare model for LoRA
+logger.info("Preparing model for LoRA training")
 model = prepare_model_for_kbit_training(model)
 model.config.use_cache = False  # Disable cache for training
 
 # LoRA config
+logger.info("Configuring LoRA parameters")
 lora_config = LoraConfig(
     r=config["lora"]["r"],
     lora_alpha=config["lora"]["lora_alpha"],
@@ -41,9 +56,12 @@ lora_config = LoraConfig(
 )
 
 # Apply LoRA
+logger.info("Applying LoRA to model")
 model = get_peft_model(model, lora_config)
+logger.info(f"Model trainable parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad)}")
 
 # Training arguments
+logger.info("Setting up training arguments")
 training_args = TrainingArguments(
     output_dir=config["training"]["output_dir"],
     per_device_train_batch_size=config["training"]["batch_size"],
@@ -61,6 +79,7 @@ training_args = TrainingArguments(
 )
 
 # Trainer
+logger.info("Initializing trainer")
 trainer = Trainer(
     model=model,
     args=training_args,
@@ -73,11 +92,12 @@ trainer = Trainer(
 )
 
 # Train
-print("Starting training...")
+logger.info("Starting training...")
 trainer.train()
-print("Training complete!")
+logger.info("Training complete!")
 
 # Save model
+logger.info(f"Saving model to {config['training']['output_dir']}/final")
 model.save_pretrained(f"{config['training']['output_dir']}/final")
 tokenizer.save_pretrained(f"{config['training']['output_dir']}/final")
-print(f"Model saved to {config['training']['output_dir']}/final")
+logger.info(f"Model saved to {config['training']['output_dir']}/final")
